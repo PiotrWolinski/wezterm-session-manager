@@ -22,6 +22,7 @@ local function retrieve_workspace_data(window)
 	for _, tab in ipairs(window:mux_window():tabs()) do
 		local tab_data = {
 			tab_id = tostring(tab:tab_id()),
+			title = tostring(tab:get_title()),
 			panes = {},
 		}
 
@@ -41,7 +42,6 @@ local function retrieve_workspace_data(window)
 				pixel_height = pane_info.pixel_height,
 				cwd = tostring(pane_info.pane:get_current_working_dir()),
 				tty = tostring(pane_info.pane:get_foreground_process_name()),
-				title = tostring(tab:get_title()),
 			})
 		end
 
@@ -130,7 +130,10 @@ local function recreate_workspace(window, workspace_data)
 
 		-- Activate the new tab before creating panes
 		new_tab:activate()
-		new_tab:set_title(tab_data.title)
+
+		if tab_data.title ~= nil and tab_data.title ~= "" then
+			new_tab:set_title(tab_data.title)
+		end
 
 		-- Recreate panes within this tab
 		for j, pane_data in ipairs(tab_data.panes) do
